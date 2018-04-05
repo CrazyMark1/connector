@@ -1,4 +1,4 @@
-package com.mark.orm.connector.v1;
+package com.mark.orm.connector.bean;
 
 /**
  * @Author: 帅气的Mark

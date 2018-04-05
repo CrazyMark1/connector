@@ -15,12 +15,14 @@ public class Configuration {
         return (T)Proxy.newProxyInstance(this.getClass().getClassLoader(),new Class[]{clazz},new MapperProxy(sqlSession));
     }
 
+
     static class TestMapperXml{
-        public static final String NAMESPACE="com.mark.orm.connector.v1.TestMapper";
+        public static final String NAMESPACE="com.mark.orm.connector.mapper.TestMapper";
         public static final Map<String,String> METHODSQLMAPPING=new HashMap<String, String>();
 
         static{
             METHODSQLMAPPING.put("selectByPrimaryKey","select * from test where id =%d");
         }
     }
+
 }

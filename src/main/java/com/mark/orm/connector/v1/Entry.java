@@ -1,5 +1,8 @@
 package com.mark.orm.connector.v1;
 
+import com.mark.orm.connector.bean.Test;
+import com.mark.orm.connector.mapper.TestMapper;
+
 /**
  * @Author: 帅气的Mark
  * @Description: Mark行行好，给点注释吧！

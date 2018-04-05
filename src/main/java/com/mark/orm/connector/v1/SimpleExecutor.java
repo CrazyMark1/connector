@@ -1,5 +1,7 @@
 package com.mark.orm.connector.v1;
 
+import com.mark.orm.connector.bean.Test;
+
 import java.sql.*;
 
 /**
