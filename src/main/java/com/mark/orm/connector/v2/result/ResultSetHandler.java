@@ -5,8 +5,9 @@ import com.mark.orm.connector.v2.config.Configuration;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author: 帅气的Mark
@@ -21,18 +22,19 @@ public class ResultSetHandler {
         this.configuration = configuration;
     }
 
-    public <T> T handle(ResultSet rs, Class type) throws SQLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        Object resultObj = type.newInstance();
-        if (rs.next()) {
-            int i = 0;
+    public <E> List<E> handle(ResultSet rs, Class type) throws SQLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        List<E> list=new ArrayList<E>();
+        while (rs.next()) {
+            Object resultObj = type.newInstance();
             for (Field field : resultObj.getClass().getDeclaredFields()) {
-                setValue(resultObj, field, rs ,i);
+                setValue(resultObj, field, rs);
             }
+            list.add((E) resultObj);
         }
-        return (T) resultObj;
+        return list;
     }
 
-    private void setValue(Object resultObj, Field field, ResultSet rs, int i) throws NoSuchMethodException, SQLException, InvocationTargetException, IllegalAccessException {
+    private void setValue(Object resultObj, Field field, ResultSet rs) throws NoSuchMethodException, SQLException, InvocationTargetException, IllegalAccessException {
         Method setMethod = resultObj.getClass().getMethod("set" + upperCapital(field.getName()), field.getType());
         setMethod.invoke(resultObj, getResult(field,rs));
     }
@@ -44,10 +46,24 @@ public class ResultSetHandler {
         if(Integer.class == type){
             return rs.getInt(field.getName());
         }
-        if(String.class == type){
+        else if(String.class == type){
             return rs.getString(field.getName());
         }
-        return rs.getString(field.getName());
+        else if (Double.class==type){
+            return rs.getDouble(field.getName());
+        }
+        else if (Float.class==type){
+            return rs.getFloat(field.getName());
+        }
+        else if (Date.class==type){
+            return rs.getDate(field.getName());
+        }
+        else if  (Time.class==type){
+            return rs.getTime(field.getName());
+        }
+        else {
+            throw new RuntimeException("暂不支持该结果映射");
+        }
     }
 
     private String upperCapital(String name) {

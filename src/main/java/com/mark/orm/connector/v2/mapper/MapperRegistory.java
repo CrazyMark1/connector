@@ -1,9 +1,11 @@
 package com.mark.orm.connector.v2.mapper;
 
 import com.mark.orm.connector.bean.Test;
+import com.mark.orm.connector.v2.mapping.SqlCommandType;
 import com.mark.orm.connector.v2.session.SqlSession;
 
 import java.lang.reflect.Proxy;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,39 +20,43 @@ public class MapperRegistory {
 
     public MapperRegistory() {
         METHODSQLMAPPING.put("com.mark.orm.connector.mapper.TestMapper.selectByPrimaryKey",
-                new MapperData("select * from test where id = %d",Test.class));
+                new MapperData("select * from test where id =?",Test.class,SqlCommandType.SELECT));
+        METHODSQLMAPPING.put("com.mark.orm.connector.mapper.TestMapper.insert",
+                new MapperData("insert test(nums,name) values(?,?)",Integer.class,SqlCommandType.INSERT));
+        METHODSQLMAPPING.put("com.mark.orm.connector.mapper.TestMapper.deleteByPrimaryKey",
+                new MapperData("delete from test where id =?",Integer.class,SqlCommandType.DELETE));
+        METHODSQLMAPPING.put("com.mark.orm.connector.mapper.TestMapper.selectAll",
+                new MapperData("select * from test where id>1", Test.class,SqlCommandType.SELECT));
     }
 
-    public <T>MapperData getMapperData(String nameSpace){
-        return METHODSQLMAPPING.get(nameSpace);
+    public <T>MapperData getMapperData(String nameSpaceMethod){
+        return METHODSQLMAPPING.get(nameSpaceMethod);
     }
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(),new Class[]{type},new MapperProxy<T>(sqlSession,type));
     }
 
     public  class MapperData<T>{
-        private String sql;
-        private Class<T> type;
+        private final String sql;
+        private final Class<T> returnType;
+        private final SqlCommandType type;
 
-        public MapperData(String sql, Class<T> type) {
+        public MapperData(String sql, Class<T> returnType, SqlCommandType type) {
             this.sql = sql;
-            this.type = type;
+            this.returnType = returnType;
+            this.type=type;
         }
 
         public String getSql() {
             return sql;
         }
 
-        public void setSql(String sql) {
-            this.sql = sql;
+        public Class<T> getReturnType() {
+            return returnType;
         }
 
-        public Class<T> getType() {
+        public SqlCommandType getType() {
             return type;
-        }
-
-        public void setType(Class<T> type) {
-            this.type = type;
         }
     }
 

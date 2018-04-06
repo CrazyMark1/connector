@@ -1,9 +1,11 @@
 package com.mark.orm.connector.v2.mapper;
 
+import com.mark.orm.connector.v2.parsing.Parameter;
 import com.mark.orm.connector.v2.session.SqlSession;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @Author: 帅气的Mark
@@ -25,8 +27,21 @@ public class MapperProxy<T> implements InvocationHandler{
                 .getMapperRegistor()
                 .getMapperData(method.getDeclaringClass().getName()+"."+method.getName());
         if (null != mapperData){
-            System.out.println(String.format("SQL [ %s ], parameter [%s] ", mapperData.getSql(), args[0]));
-            return sqlSession.selectOne(mapperData,String.valueOf(args[0]));
+            MapperParameters mapperParameters= Parameter.convertArgsToParameters(method,args);
+            switch (mapperData.getType()){
+                case DELETE:
+                    return sqlSession.delete(mapperData,mapperParameters);
+                case INSERT:
+                    return sqlSession.insert(mapperData,mapperParameters);
+                case SELECT:
+                    List list=sqlSession.selectList(mapperData,mapperParameters);
+                    if (list.size()>1){
+                        return list;
+                    }else
+                        return list.get(0);
+                case UPDATE:
+                    return sqlSession.update(mapperData,mapperParameters);
+            }
         }
         return method.invoke(proxy, args);
     }

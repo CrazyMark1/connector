@@ -9,13 +9,14 @@ import com.mark.orm.connector.v2.session.SqlSession;
  * @QQ: 85104982
  */
 public class Configuration {
-    private MapperRegistory mapperRegistor=new MapperRegistory();
+    private MapperRegistory mapperRegistory=new MapperRegistory();
 
     public MapperRegistory getMapperRegistor(){
-        return mapperRegistor;
+        return mapperRegistory;
     }
 
     public <T> T getMappper(Class<T> type, SqlSession sqlSession) {
-        return mapperRegistor.getMapper(type,sqlSession);
+        return mapperRegistory.getMapper(type,sqlSession);
     }
+
 }
