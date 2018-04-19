@@ -4,8 +4,8 @@ import com.mark.orm.connector.v2.mapping.SqlCommandType;
 import com.mark.orm.connector.v2.session.SqlSession;
 
 import java.lang.reflect.Proxy;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -61,6 +61,7 @@ public class MapperRegistory {
         public SqlCommandType getType() {
             return type;
         }
+
     }
 
 }

@@ -35,10 +35,13 @@ public class MapperProxy<T> implements InvocationHandler{
                     return sqlSession.insert(mapperData,mapperParameters);
                 case SELECT:
                     List list=sqlSession.selectList(mapperData,mapperParameters);
-                    if (list.size()>1){
+                    if (list.size()>0){
+                        if (method.getReturnType()!=List.class)
+                            return list.get(0);
                         return list;
-                    }else
-                        return list.get(0);
+                    }
+                    else
+                        return null;
                 case UPDATE:
                     return sqlSession.update(mapperData,mapperParameters);
             }

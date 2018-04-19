@@ -24,4 +24,5 @@ public class MapperParameters{
     public int size(){
         return parameters.size();
     }
+
 }

@@ -3,6 +3,7 @@ package com.mark.orm.connector.v2;
 import com.mark.orm.connector.bean.Test;
 import com.mark.orm.connector.mapper.TestMapper;
 import com.mark.orm.connector.v2.config.Configuration;
+import com.mark.orm.connector.v2.executor.ExecutorFactory;
 import com.mark.orm.connector.v2.executor.SimpleExecutor;
 import com.mark.orm.connector.v2.session.SqlSession;
 
@@ -20,13 +21,19 @@ public class Entry {
         Configuration configuration=new Configuration();
         configuration.setScanPath("com.mark.orm.connector.mapper");
         configuration.build();
-        SqlSession sqlSession=new SqlSession(configuration,new SimpleExecutor(configuration));
+        SqlSession sqlSession=new SqlSession(configuration, ExecutorFactory.getExecutor(ExecutorFactory.CACHE,configuration));
         TestMapper testMapper=sqlSession.getMapper(TestMapper.class);
 //        System.out.println(testMapper.selectByPrimaryKey(1));
+//        System.out.println(testMapper.selectByPrimaryKey(2));
+
 //        System.out.println(testMapper.insert(100,"adasda"));
-////        System.out.println(testMapper.deleteByPrimaryKey(2));
-        List<Test> list=testMapper.selectAll();
+//        System.out.println(testMapper.deleteByPrimaryKey(2));
+        List<Test> list=testMapper.selectByPrimaryKey2(1,4);
         for (Test test : list) {
+            System.out.println(test);
+        }
+        List<Test> list2=testMapper.selectByPrimaryKey2(1,5);
+        for (Test test : list2) {
             System.out.println(test);
         }
     }

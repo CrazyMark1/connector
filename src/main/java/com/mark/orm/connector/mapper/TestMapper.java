@@ -18,6 +18,9 @@ public interface TestMapper {
     @Select("select * from test where id =?")
     Test selectByPrimaryKey(Integer userId);
 
+    @Select("select * from test where id >? and id <?")
+    List<Test> selectByPrimaryKey2(Integer userId,Integer userId2);
+
     @Insert("insert test(nums,name) values(?,?)")
     int insert(Integer nums,String name);
 
