@@ -5,6 +5,7 @@ import com.mark.orm.connector.mapper.TestMapper;
 import com.mark.orm.connector.v2.config.Configuration;
 import com.mark.orm.connector.v2.executor.ExecutorFactory;
 import com.mark.orm.connector.v2.executor.SimpleExecutor;
+import com.mark.orm.connector.v2.plugin.TestPlugin;
 import com.mark.orm.connector.v2.session.SqlSession;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,8 +21,9 @@ public class Entry {
     public static void main(String[] args) throws IllegalAccessException, InvocationTargetException, ClassNotFoundException {
         Configuration configuration=new Configuration();
         configuration.setScanPath("com.mark.orm.connector.mapper");
+        configuration.addInterceptor(new TestPlugin());
         configuration.build();
-        SqlSession sqlSession=new SqlSession(configuration, ExecutorFactory.getExecutor(ExecutorFactory.CACHE,configuration));
+        SqlSession sqlSession=new SqlSession(configuration, configuration.newExecutor("CACHE"));
         TestMapper testMapper=sqlSession.getMapper(TestMapper.class);
 //        System.out.println(testMapper.selectByPrimaryKey(1));
 //        System.out.println(testMapper.selectByPrimaryKey(2));
@@ -30,10 +32,6 @@ public class Entry {
 //        System.out.println(testMapper.deleteByPrimaryKey(2));
         List<Test> list=testMapper.selectByPrimaryKey2(1,4);
         for (Test test : list) {
-            System.out.println(test);
-        }
-        List<Test> list2=testMapper.selectByPrimaryKey2(1,5);
-        for (Test test : list2) {
             System.out.println(test);
         }
     }

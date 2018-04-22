@@ -1,8 +1,14 @@
 package com.mark.orm.connector.v2.config;
 
+import com.mark.orm.connector.v2.executor.CacheExecutor;
+import com.mark.orm.connector.v2.executor.Executor;
+import com.mark.orm.connector.v2.executor.ExecutorFactory;
+import com.mark.orm.connector.v2.executor.SimpleExecutor;
 import com.mark.orm.connector.v2.mapper.MapperRegistory;
 import com.mark.orm.connector.v2.parsing.AnnotationParser;
 import com.mark.orm.connector.v2.parsing.PathParser;
+import com.mark.orm.connector.v2.plugin.Interceptor;
+import com.mark.orm.connector.v2.plugin.InterceptorChain;
 import com.mark.orm.connector.v2.session.SqlSession;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +23,7 @@ import java.util.List;
 public class Configuration {
     private String scanPath;
     private MapperRegistory mapperRegistory=new MapperRegistory();
+    private final InterceptorChain interceptorChain = new InterceptorChain();
 
     public MapperRegistory getMapperRegistor(){
         return mapperRegistory;
@@ -32,6 +39,24 @@ public class Configuration {
         for (String s : list) {
             AnnotationParser.parserAndRegist(Class.forName(s.split(".class")[0]));
         }
+    }
+    public List<Interceptor> getInterceptors() {
+        return interceptorChain.getInterceptors();
+    }
+
+    public void addInterceptor(Interceptor interceptor) {
+        interceptorChain.addInterceptor(interceptor);
+    }
+
+    public Executor newExecutor(String executorType) {
+        executorType = executorType == null ? "CACHE" : "SIMPLE";
+        Executor executor;
+        if (executorType.equals("SIMPLE"))
+            executor= ExecutorFactory.getExecutor(executorType,this);
+        else
+            executor=ExecutorFactory.getExecutor(executorType,this);
+        executor = (Executor) interceptorChain.pluginAll(executor);
+        return executor;
     }
 
     public void setScanPath(String scanPath){
